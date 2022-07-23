@@ -9,6 +9,6 @@ require "fileutils"
     unless dir=="v13"
       FileUtils.cp( Dir.glob("../v13/*.go"), ".")
     end
-    puts(%x(#{cmd} run main.go))
+    puts(%x(#{cmd} run main.go 100000))
   end
 end
