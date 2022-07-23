@@ -8,25 +8,26 @@ import (
 	"time"
 )
 
-type proc = func(a int32) int32
+type proc = func(a uint32) uint32
 
-func test(num int32) int32 {
+func test(num uint32) uint32 {
 	m := make([]proc, 0, num)
-	for i := int32(0); i < num; i++ {
-		m = append(m, func(a int32) int32 {
-			x := a*7 + 11
-			y := x*13 + 15
-			z := y*17 + 19
-			w := z*23 + 29
+	for ix := uint32(0); ix < num; ix++ {
+		i := ix
+		m = append(m, func(a uint32) uint32 {
+			x := (i+a)*7 + 11
+			y := (x+a)*13 + 15
+			z := (y+i)*17 + 19
+			w := (z+i+a)*23 + 29
 			t := x ^ (x << 11)
 			return ((w ^ (w >> 19)) ^ (t ^ (t >> 8))) % num
 		})
 	}
-	sum := int32(0)
-
-	for i := int32(0); i < num; i++ {
-		b := make([]bool, num)
-		sum += func(s int32) int32 {
+	sum := uint32(0)
+	for i := uint32(0); i < num; i++ {
+		sum += func(s0 uint32) uint32 {
+			s := s0
+			b := make([]bool, num)
 			for {
 				if b[s] {
 					return s
@@ -46,8 +47,8 @@ func main() {
 		panic(err)
 	}
 	t0 := time.Now()
-	r := test(int32(num))
+	r := test(uint32(num))
 	tick := time.Now().Sub(t0)
-	ms := float64(tick.Microseconds()) * 1e-3
+	ms := float64(tick.Nanoseconds()) * 1e-6
 	fmt.Printf("r:%d, Go version:%q, tick:%.2fms\n", r, runtime.Version(), ms)
 }
