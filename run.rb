@@ -9,7 +9,18 @@ def gomod(v)
   end
 end
 
-(11..18).each do |v|
+def govers
+  case RUBY_PLATFORM
+  when /arm64\-darwin/
+    16..18
+  when /x86_64\-darwin/
+    11..18
+  else
+    raise "unexpected RUBY_PLATFORM value"
+  end
+end
+
+govers.each do |v|
   dir = "v1.%d" % v
   cmd = v==18 ? "go" : "go1.%d" % v
   FileUtils.mkdir_p(dir)
