@@ -17,3 +17,4 @@ cpp/clang
 cpp/gcc11
 
 venv
+.DS_Store
