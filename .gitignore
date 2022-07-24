@@ -15,3 +15,5 @@
 # vendor/
 cpp/clang
 cpp/gcc11
+
+venv
