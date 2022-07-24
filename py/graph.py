@@ -7,6 +7,7 @@ import os.path
 import re
 
 matplotlib.use('Agg')
+plt.rcParams['font.family'] = 'Hiragino Sans'
 
 def readall(path):
     with open(path) as f:
@@ -44,25 +45,40 @@ def rename(x):
     if m:
         return "g++-11"
 
+BH=0.45
+
+def pos(key,e):
+    m=re.search(r"go\d+\.(\d+)", key)
+    if m:
+        return int(m.group(1))-18 + e*BH
+    m=re.search(r"clang", key)
+    if m:
+        return 1.5 + e*BH
+    m=re.search(r"11.3.0", key)
+    if m:
+        return 2.5 + e*BH
+
+
 def main():
     a,_ = os.path.split(__file__)
     data = readdata(a+"/../README.md")
-    print(repr(data))
     fig = plt.figure(figsize=(6, 3), dpi=200)
     envs = ['intel MBP', 'M1 Pro 非MAX MBP']
-    for i in range(len(envs)):
-        env = envs[i]
-        ax = fig.add_subplot(1, 2, i+1)
-        goLabels = [x for x in data[env]["go"]]
-        cppLabels = [x for x in data[env]["c++"]]
-        goTicks = [min(data[env]["go"][x]) for x in goLabels]
-        cppTicks = [min(data[env]["c++"][x]) for x in cppLabels]
-        ticks = goTicks + cppTicks
-        labels = [rename(x) for x in goLabels + cppLabels]
-        left = list(range(len(ticks)))
-        ax.barh( left, ticks,  tick_label=labels, align="center")
+    labels={}
+    ax = fig.add_subplot(1, 1,1)
+    for e in range(len(envs)):
+        env = envs[e]
+        edata = dict(data[env]["go"], **data[env]["c++"])
+        for key in edata:
+            val = min(edata[key])
+            print(key,val)
+            ax.barh( [pos(key,e)], [val], height=BH, align="center", color="br"[e])
+            labels[pos(key,0)] = rename(key)
+
+    print(repr((list(labels.keys()), list(labels.values()))))
+    ax.set_yticks(list(labels.keys()), list(labels.values()))
+    ax.set_xlabel("処理時間(ms)")
     fig.subplots_adjust()
     plt.tight_layout()
     plt.savefig("graph.png")
-
 main()
