@@ -24,6 +24,7 @@ govers.each do |v|
   pre = ARGV[0]
   dir = pre+"v1.%d" % v
   cmd = v==18 ? "go" : "go1.%d" % v
+  num = ARGV[1]
   FileUtils.mkdir_p(dir)
   Dir.chdir(dir) do
     unless dir==pre+"v1.18"
@@ -35,7 +36,7 @@ govers.each do |v|
     puts %x(#{cmd} build -o #{dir} main.go 2>&1)
     puts( %x(./#{dir} 10 2>&1) )
     5.times do 
-      puts( %x(./#{dir} 3000 2>&1) )
+      puts( %x(./#{dir} #{num} 2>&1) )
     end
   end
 end
